@@ -13,6 +13,7 @@ jobs:
             -scheme Unity-iPhone \
             -sdk iphoneos \
             -configuration Release \
+            -derivedDataPath ./build_output \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_IDENTITY="" \
@@ -22,7 +23,8 @@ jobs:
       - name: Package to IPA
         run: |
           mkdir -p Payload
-          cp -r build/Release-iphoneos/build.app Payload/  # (프로젝트 구조에 맞춰 .app 경로 지정)
+          # 빌드 산출물 폴더에서 생성된 .app 파일을 자동으로 찾아 Payload로 복사
+          cp -r ./build_output/Build/Products/Release-iphoneos/*.app Payload/
           zip -r app-unsigned.ipa Payload
 
       - name: Upload Artifact
