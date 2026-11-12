@@ -5,8 +5,15 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
+      # 1. Git LFS 바이너리까지 온전히 체크아웃
       - uses: actions/checkout@v4
+        with:
+          lfs: true
 
+      - name: Checkout LFS objects
+        run: git lfs pull
+
+      # 2. 메인 및 프레임워크 모두 서명 없이 빌드
       - name: Build Unsigned App
         run: |
           xcodebuild -project Unity-iPhone.xcodeproj \
@@ -16,17 +23,18 @@ jobs:
             -derivedDataPath ./build_output \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_IDENTITY="" \
+            CODE_SIGN_IDENTITY="" \
             PROVISIONING_PROFILE_SPECIFIER="" \
             clean build
 
+      # 3. .app을 Payload 폴더에 넣고 ipa 압축
       - name: Package to IPA
         run: |
           mkdir -p Payload
-          # 빌드 산출물 폴더에서 생성된 .app 파일을 자동으로 찾아 Payload로 복사
           cp -r ./build_output/Build/Products/Release-iphoneos/*.app Payload/
           zip -r app-unsigned.ipa Payload
 
+      # 4. 결과물 업로드
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
