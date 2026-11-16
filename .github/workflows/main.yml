@@ -26,6 +26,8 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGN_ENTITLEMENTS="" \
             CODE_SIGNING_INJECT_BASE_ENTITLEMENTS=NO \
+            DEBUG_INFORMATION_FORMAT=dwarf \
+            GCC_GENERATE_DEBUGGING_SYMBOLS=NO \
             clean build
 
       # 3. .app을 Payload 폴더에 넣고 ipa 압축
