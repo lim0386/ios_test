@@ -3,7 +3,7 @@ on: workflow_dispatch
 
 jobs:
   build:
-    runs-on: macos-latest  # 무료 계정 및 Intel 기반 표준 러너
+    runs-on: macos-latest
     steps:
       # 1. Git LFS 포함 체크아웃
       - uses: actions/checkout@v4
@@ -13,7 +13,13 @@ jobs:
       - name: Checkout LFS objects
         run: git lfs pull
 
-      # 2. 메인 타깃 및 Framework 무서명 빌드
+      # 2. 실행 권한 부여 (Permission denied 해결)
+      - name: Grant Execute Permissions to Scripts
+        run: |
+          chmod +x *.sh || true
+          chmod -R +x ./*.sh || true
+
+      # 3. 메인 타깃 및 Framework 무서명 빌드
       - name: Build Unsigned App
         run: |
           xcodebuild -project Unity-iPhone.xcodeproj \
@@ -30,7 +36,7 @@ jobs:
             GCC_GENERATE_DEBUGGING_SYMBOLS=NO \
             clean build
 
-      # 3. .app을 Payload 폴더에 넣고 ipa 압축
+      # 4. .app을 Payload 폴더에 넣고 ipa 압축
       - name: Package to IPA
         run: |
           mkdir -p Payload
@@ -42,7 +48,7 @@ jobs:
           cp -r "$APP_PATH" Payload/
           zip -r app-unsigned.ipa Payload
 
-      # 4. 결과물 업로드
+      # 5. 결과물 업로드
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
