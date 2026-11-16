@@ -3,7 +3,7 @@ on: workflow_dispatch
 
 jobs:
   build:
-    runs-on: macos-13  # 무료 계정 및 Intel 기반 표준 러너
+    runs-on: macos-latest  # 무료 계정 및 Intel 기반 표준 러너
     steps:
       # 1. Git LFS 포함 체크아웃
       - uses: actions/checkout@v4
